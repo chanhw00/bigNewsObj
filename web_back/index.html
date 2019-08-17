@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-17 00:28:20
- * @LastEditTime: 2019-08-17 11:20:37
+ * @LastEditTime: 2019-08-17 11:47:25
  * @LastEditors: Please set LastEditors
  -->
 <!DOCTYPE html>
@@ -141,27 +141,40 @@
     <script src="./js/bootstrap/js/bootstrap.min.js"></script>
 
     <script>
-        // 1-给 退出 按钮点击事件,跳转到登录页面
-        $('.icon-tuichu').parent().on('click', function (e) {
-            e.preventDefault();
+        $(function () {
+            // 1-给 退出 按钮点击事件,跳转到登录页面
+            $('.icon-tuichu').parent().on('click', function (e) {
+                e.preventDefault();
 
-            $('#myModal').modal({
-                keyboard: true
-            })
+                $('#myModal').modal({
+                    keyboard: true
+                })
 
-            $('.btn-primary').on('click', function () {
-                $.ajax({
-                    type: 'post',
-                    url: 'http://localhost:8080/admin/user/logout',
-                    success: function (backData) {
-                        if (backData.code == 200) {
-                            window.location.href = './login.html'
+                $('.btn-primary').on('click', function () {
+                    $.ajax({
+                        type: 'post',
+                        url: 'http://localhost:8080/admin/user/logout',
+                        success: function (backData) {
+                            if (backData.code == 200) {
+                                window.location.href = './login.html'
+                            }
                         }
-                    }
+                    })
                 })
             })
 
-
+            // 2-一登录页面,获取用户信息
+            $.ajax({
+                type:'get',
+                url:'http://localhost:8080/admin/user/info',
+                success:function(backData){
+                    if (backData.code == 200) {
+                        $('.user_info>span').html('欢迎&nbsp;&nbsp;' + backData.data.nickname);
+                        $('.user_info>img').attr('src',backData.data.userPic);
+                        $('.user_center_link>img').attr('src',backData.data.userPic)
+                    }
+                }
+            })
         })
     </script>
 
