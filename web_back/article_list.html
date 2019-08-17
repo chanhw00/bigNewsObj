@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-17 00:28:20
- * @LastEditTime: 2019-08-17 23:04:07
+ * @LastEditTime: 2019-08-17 23:22:38
  * @LastEditors: Please set LastEditors
  -->
 <!DOCTYPE html>
@@ -30,7 +30,7 @@
                 <div class="col-xs-6">
                     <form class="form-inline">
                         <select id="selCategory" name="" class="form-control input-sm">
-                            <option>所有分类</option>
+                            <option value="">所有分类</option>
                             <option>未分类</option>
                             <option>奇趣事</option>
                             <option>会生活</option>
@@ -311,6 +311,7 @@
 
     <script>
         $(function () {
+
             // 1-获取下拉菜单的文章分类
 
             $.ajax({
@@ -329,7 +330,7 @@
                 e.preventDefault();
 
                 var cateType = $('#selCategory').val();
-                var cateState = $('selStatus').val();
+                var cateState = $('#selStatus').val();
 
                 $.ajax({
                     type: 'get',
@@ -342,12 +343,34 @@
                     },
                     success: function (backData) {
                         if (backData.code == 200) {
-                            var resHtml = template('articleList',backData);
+                            var resHtml = template('articleList', backData);
                             $('tbody').html(resHtml)
                         }
                     }
                 })
             })
+
+            // 3-一进入页面则发送Ajax,获取文章,渲染到页面
+            function getData(myPage) {
+                $.ajax({
+                    type: 'get',
+                    url: 'http://localhost:8080/admin/article/query',
+                    data: {
+                        page: myPage,
+                        perpage: 5
+                    },
+                    success: function (backData) {
+                        console.log(backData);
+                        var resHtml = template('articleList', backData);
+                        $('tbody').html(resHtml);
+                    }
+                });
+            }
+            // getData(1);
+            $('#btnSearch').trigger('click');
+
+            // 4-
+            
         })
     </script>
 
