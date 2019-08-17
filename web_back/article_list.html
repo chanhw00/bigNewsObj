@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-17 00:28:20
- * @LastEditTime: 2019-08-17 23:22:38
+ * @LastEditTime: 2019-08-17 23:36:47
  * @LastEditors: Please set LastEditors
  -->
 <!DOCTYPE html>
@@ -309,6 +309,7 @@
         {{/each}}
     </script>
 
+    <script src="./js/jquery.twbsPagination.js"></script>
     <script>
         $(function () {
 
@@ -369,8 +370,14 @@
             // getData(1);
             $('#btnSearch').trigger('click');
 
-            // 4-
-            
+            // 4-分页
+            $('.pagination').twbsPagination({
+                totalPages: 45, 
+                visiblePages: 5, 
+                onPageClick: function (event, page) {
+                    getData(page);
+                }
+            });
         })
     </script>
 
