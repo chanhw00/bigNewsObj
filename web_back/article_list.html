@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-17 00:28:20
- * @LastEditTime: 2019-08-17 23:36:47
+ * @LastEditTime: 2019-08-18 17:37:32
  * @LastEditors: Please set LastEditors
  -->
 <!DOCTYPE html>
@@ -325,59 +325,76 @@
                     }
                 }
             })
+            // 变量
+            var cateType;
+            var cateState;
+            var myTotalPage = 10;
+            var isTrue = false;
+            
 
             // 2-点击 筛选按钮 把符合要求的文章渲染到页面
             $('#btnSearch').on('click', function (e) {
                 e.preventDefault();
+                isTrue = true;
 
-                var cateType = $('#selCategory').val();
-                var cateState = $('#selStatus').val();
+                cateType = $('#selCategory').val();
+                cateState = $('#selStatus').val();
 
+                getData(1, cateType, cateState);
+
+            })
+
+            // 3-一进入页面则发送Ajax,获取文章,渲染到页面
+            function getData(myPage, cateType, cateState) {
                 $.ajax({
                     type: 'get',
                     url: 'http://localhost:8080/admin/article/query',
                     data: {
                         type: cateType,
                         state: cateState,
-                        page: 1,
-                        perpage: 5
-                    },
-                    success: function (backData) {
-                        if (backData.code == 200) {
-                            var resHtml = template('articleList', backData);
-                            $('tbody').html(resHtml)
-                        }
-                    }
-                })
-            })
-
-            // 3-一进入页面则发送Ajax,获取文章,渲染到页面
-            function getData(myPage) {
-                $.ajax({
-                    type: 'get',
-                    url: 'http://localhost:8080/admin/article/query',
-                    data: {
                         page: myPage,
                         perpage: 5
                     },
                     success: function (backData) {
-                        console.log(backData);
+                        // console.log(backData);
                         var resHtml = template('articleList', backData);
                         $('tbody').html(resHtml);
+
+                        // 重绘事件
+                        var totalPages = backData.data.totalPage;
+
+                        if (totalPages != myTotalPage || isTrue == true) {
+                            myTotalPage = totalPages;
+                            var currentPage = $pagination.twbsPagination('getCurrentPage');
+                            $pagination.twbsPagination('destroy');
+                            $pagination.twbsPagination($.extend({}, defaultOpts, {
+                                startPage: 1,
+                                totalPages: totalPages
+                            }));
+                            isTrue = false;
+                        }
+
                     }
                 });
             }
             // getData(1);
-            $('#btnSearch').trigger('click');
+            // $('#btnSearch').trigger('click');
+
 
             // 4-分页
-            $('.pagination').twbsPagination({
-                totalPages: 45, 
-                visiblePages: 5, 
+            var $pagination = $('.pagination');
+            var defaultOpts = {
+                first:'首页',
+                prev:'上一页',
+                next:'下一页',
+                last:'末页',
+                totalPages: myTotalPage,
+                visiblePages: 5,
                 onPageClick: function (event, page) {
-                    getData(page);
+                    getData(page, cateType, cateState);
                 }
-            });
+            }
+            $pagination.twbsPagination(defaultOpts);
         })
     </script>
 
