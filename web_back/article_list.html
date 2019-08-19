@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-17 00:28:20
- * @LastEditTime: 2019-08-18 22:48:57
+ * @LastEditTime: 2019-08-19 15:17:45
  * @LastEditors: Please set LastEditors
  -->
 <!DOCTYPE html>
@@ -303,7 +303,7 @@
                 <td class="text-center">{{v.state}}</td>
                 <td class="text-center">
                     <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs">编辑</a>
-                    <a href="javascript:deleteTr( 1005 );" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
+                    <a href="#" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
                 </td>
             </tr>
         {{/each}}
@@ -330,7 +330,7 @@
             var cateState;
             var myTotalPage = 10;
             var isTrue = false;
-            
+
 
             // 2-点击 筛选按钮 把符合要求的文章渲染到页面
             $('#btnSearch').on('click', function (e) {
@@ -343,6 +343,7 @@
                 getData(1, cateType, cateState);
 
             })
+
 
             // 3-一进入页面则发送Ajax,获取文章,渲染到页面
             function getData(myPage, cateType, cateState) {
@@ -362,10 +363,11 @@
 
                         // 重绘事件
                         var totalPages = backData.data.totalPage;
+                        window.currentPage = $pagination.twbsPagination('getCurrentPage');
 
                         if (totalPages != myTotalPage || isTrue == true) {
                             myTotalPage = totalPages;
-                            var currentPage = $pagination.twbsPagination('getCurrentPage');
+
                             $pagination.twbsPagination('destroy');
                             $pagination.twbsPagination($.extend({}, defaultOpts, {
                                 startPage: 1,
@@ -384,10 +386,10 @@
             // 4-分页
             var $pagination = $('.pagination');
             var defaultOpts = {
-                first:'首页',
-                prev:'上一页',
-                next:'下一页',
-                last:'末页',
+                first: '首页',
+                prev: '上一页',
+                next: '下一页',
+                last: '末页',
                 totalPages: myTotalPage,
                 visiblePages: 5,
                 onPageClick: function (event, page) {
@@ -395,6 +397,26 @@
                 }
             }
             $pagination.twbsPagination(defaultOpts);
+
+            // 5-给 删除 按钮点击事件
+            $('tbody').on('click', 'a.btn-delete', function () {
+
+                if (confirm('确定要删除吗?')) {
+                    var id = $(this).attr('data-id');
+                    $.ajax({
+                        type: 'get',
+                        url: 'http://localhost:8080/admin/article/delete',
+                        data: {
+                            id: id,
+                        },
+                        success: function (backData) {
+                            if (backData.code == 204) {
+                                getData(currentPage, cateType, cateState);
+                            }
+                        }
+                    })
+                }
+            })
         })
     </script>
 
